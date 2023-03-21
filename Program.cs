@@ -8,7 +8,9 @@ var n = Console.ReadLine();
 Console.Write("p = ");
 var p = Console.ReadLine();
 
-p = p.Replace('.', '.');
+p = p.Replace('.', ',');
+
+Console.WriteLine();
 
 if (!int.TryParse(n, out var parsedN) || !double.TryParse(p, out var parsedP))
 {
@@ -18,6 +20,8 @@ if (!int.TryParse(n, out var parsedN) || !double.TryParse(p, out var parsedP))
 
 var graph = new Graph(parsedN, parsedP, 0);
 graph.FillRandomly();
+
+Console.WriteLine("Graf:");
 graph.Print();
 
 var degSequence = graph.CalculateDegSequence();
