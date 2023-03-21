@@ -1,10 +1,14 @@
 ﻿using GraphMatrx_Fill_Test;
 
-Console.WriteLine("Podaj liczbę wierzchołków n oraz prawdopodobieństwo p, aby wygenerować graf losowy G(n, p)");
+Console.WriteLine("Podaj liczbę wierzchołków n oraz prawdopodobieństwo p, aby wygenerować losowy graf:");
+
 Console.Write("n = ");
 var n = Console.ReadLine();
+
 Console.Write("p = ");
 var p = Console.ReadLine();
+
+p = p.Replace('.', '.');
 
 if (!int.TryParse(n, out var parsedN) || !double.TryParse(p, out var parsedP))
 {
