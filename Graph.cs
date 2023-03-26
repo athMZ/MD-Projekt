@@ -6,6 +6,10 @@ public class Graph : Matrix
 {
     public readonly double Probability;
 
+    public Graph() : base(0, 0, 0)
+    {
+    }
+
     public Graph(int n, double p, double? fill) : base(n, n, fill)
     {
         Probability = p;
@@ -14,6 +18,34 @@ public class Graph : Matrix
     public Graph(Graph graph) : base(graph)
     {
         Probability = graph.Probability;
+    }
+
+    public Graph(List<List<int>> input) : base(input.Count, input[0].Count, 0)
+    {
+        for (int i = 0; i < input.Count; i++)
+        {
+            for (int j = 0; j < input[i].Count; j++)
+            {
+                A[i, j] = input[i][j];
+            }
+        }
+    }
+
+    public List<List<int>> GetMatrixAsInt()
+    {
+        List<List<int>> result = new(0);
+
+        for (int i = 0; i < Rows; i++)
+        {
+            result.Add(new List<int>());
+
+            for (int j = 0; j < Columns; j++)
+            {
+                result[i].Add(Convert.ToInt32(A[i, j]));
+            }
+        }
+
+        return result;
     }
 
     public void FillRandomly()
@@ -65,7 +97,6 @@ public class Graph : Matrix
         return result.Distinct().OrderBy(x => x).ToList();
     }
 
-
     public void DisplayAllNeighbours()
     {
         //We skip 0
@@ -103,6 +134,40 @@ public class Graph : Matrix
         sb.Length -= 3;
 
         Console.WriteLine(sb.ToString());
+
+    }
+
+    public void BFS(int startingVertex)
+    {
+
+        //We go from starting vertex and select all neighbours
+        //We count the neighbours
+        //We repeat this for evry neighbour 
+
+        List<int> visited = new();
+        int numOfVertices = Rows;
+
+        //Klasa, wierzchołki, ile wierzchołków
+        List<Tuple<int, string, int>> logs = new();
+
+        int klasa = 0;
+
+        logs.Add(new(klasa, startingVertex.ToString(), 1));
+
+        do
+        {
+            klasa++;
+
+            visited.Add(startingVertex);
+
+            var neighbours = GetNeighboursOfVertex(startingVertex).Where(x => !visited.Contains(x)).ToList();
+
+            logs.Add(new(klasa, string.Join(',',neighbours), neighbours.Count));
+
+        } while (visited.Count == numOfVertices);
+
+        Console.WriteLine();
+
 
     }
 }

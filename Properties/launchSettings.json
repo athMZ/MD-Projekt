@@ -1,8 +1,19 @@
 {
   "profiles": {
-    "GraphMatrx_Fill_Test": {
+    "Start from JSON": {
       "commandName": "Project",
-      "commandLineArgs": "10 .4"
+      "commandLineArgs": "-j graph.json"
+    },
+    "Start from user input": {
+      "commandName": "Project"
+    },
+    "Start from params": {
+      "commandName": "Project",
+      "commandLineArgs": "-p 12 .5"
+    },
+    "Start from user input and output JSON": {
+      "commandName": "Project",
+      "commandLineArgs": "-g"
     }
   }
 }
