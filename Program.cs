@@ -10,7 +10,7 @@ var n = Console.ReadLine();
 Console.Write("p = ");
 var p = Console.ReadLine();
 
-p = p.Replace('.', ',');
+p = p?.Replace('.', ',');
 
 Console.WriteLine();
 
@@ -28,6 +28,9 @@ graph.Print();
 
 var degSequence = graph.CalculateDegSequence();
 Console.Write($"Ciąg stopni: ({string.Join(", ", degSequence)})\n");
+Console.WriteLine();
+
+graph.DisplayAllNeighbours();
 
 //Draw graph with nodes place on the circumference of a circle
 //YOu can use code from GK to generate points for polygons
