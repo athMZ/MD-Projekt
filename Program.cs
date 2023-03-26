@@ -1,5 +1,7 @@
 ﻿using GraphMatrx_Fill_Test;
 
+Console.WriteLine("Gabriel Siwiec, Mikołaj Zuziak\n");
+
 Console.WriteLine("Podaj liczbę wierzchołków n oraz prawdopodobieństwo p, aby wygenerować losowy graf:");
 
 Console.Write("n = ");
@@ -26,7 +28,6 @@ graph.Print();
 
 var degSequence = graph.CalculateDegSequence();
 Console.Write($"Ciąg stopni: ({string.Join(", ", degSequence)})\n");
-
 Console.WriteLine();
 
 graph.DisplayAllNeighbours();
