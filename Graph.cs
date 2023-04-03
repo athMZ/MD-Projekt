@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace GraphMatrx_Fill_Test;
+namespace GraphMatrix;
 
 public class Graph : Matrix
 {
@@ -65,23 +65,33 @@ public class Graph : Matrix
         }
     }
 
-    public List<double> CalculateDegSequence()
+    public List<int> CalculateDegSequence()
     {
-        List<double> result = new();
+        List<int> result = new();
 
         for (var i = 0; i < Rows; i++)
         {
-            var degI = 0d;
+            var degI = 0;
 
             for (var j = 0; j < Columns; j++)
             {
-                degI += A[i, j];
+                degI += (int)A[i, j];
             }
 
             result.Add(degI);
         }
 
         return result.OrderByDescending(x => x).ToList();
+    }
+
+    public int GetGraphM()
+    {
+        return CalculateDegSequence().Sum() / 2;
+    }
+
+    public double GetGraphDensity()
+    {
+        return GetGraphM() / (0.5 * base.Rows * (base.Rows - 1));
     }
 
     //Vertices are counted form 1 up
@@ -91,7 +101,7 @@ public class Graph : Matrix
 
         for (var j = 0; j < Columns; j++)
         {
-            if (A[vertex - 1, j] == 1) result.Add(j + 1);
+            if (Math.Abs(A[vertex - 1, j] - 1) < double.Epsilon) result.Add(j + 1);
         }
 
         return result.Distinct().OrderBy(x => x).ToList();
@@ -100,7 +110,7 @@ public class Graph : Matrix
     public void DisplayAllNeighbours()
     {
         //We skip 0
-        for (int i = 1; i <= Rows; i++)
+        for (var i = 1; i <= Rows; i++)
         {
             Console.WriteLine($"Sąsiedzi wierzchołka {i}: {string.Join(", ", GetNeighboursOfVertex(i))}");
         }
@@ -118,7 +128,7 @@ public class Graph : Matrix
         StringBuilder sb = new();
 
         //We skip 0
-        for (int i = 1; i <= Rows; i++)
+        for (var i = 1; i <= Rows; i++)
         {
             neighbours = GetNeighboursOfVertex(i);
 

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace GraphMatrx_Fill_Test;
+namespace GraphMatrix;
 
 public class Matrix
 {
@@ -8,7 +8,7 @@ public class Matrix
 
     public int Rows => A.GetLength(0);
     public int Columns => A.GetLength(1);
-    
+
     public Matrix(int n, int m, double? fill)
     {
         A = new double[n,m];
@@ -16,7 +16,7 @@ public class Matrix
         if (fill.HasValue)
             Fill(fill.Value);
     }
-    
+
     public Matrix(Matrix matrix)
     {
         A = matrix.A;
@@ -41,7 +41,7 @@ public class Matrix
             var value = string.Join(" ", Enumerable.Range(0, Columns).Select(k => A[i, k]).ToArray());
             result.AppendLine(value);
         }
-        
+
         Console.WriteLine(result);
     }
 }
