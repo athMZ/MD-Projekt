@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace GraphMatrix;
 
@@ -11,7 +12,7 @@ public class Matrix
 
     public Matrix(int n, int m, double? fill)
     {
-        A = new double[n,m];
+        A = new double[n, m];
 
         if (fill.HasValue)
             Fill(fill.Value);
@@ -43,5 +44,11 @@ public class Matrix
         }
 
         Console.WriteLine(result);
+    }
+
+    public int this[int i, int j]
+    {
+        get => (int)A[i, j];
+        set => A[i, j] = value;
     }
 }

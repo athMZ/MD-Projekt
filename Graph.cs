@@ -20,9 +20,11 @@ public class Graph : Matrix
         Probability = graph.Probability;
     }
 
-    public Graph(List<List<int>> input) : base(input.Count, input[0].Count, 0)
+    public Graph(List<List<int>> input, double probability) : base(input.Count, input[0].Count, 0)
     {
-        for (int i = 0; i < input.Count; i++)
+        Probability = probability;
+
+        for (var i = 0; i < input.Count; i++)
         {
             for (int j = 0; j < input[i].Count; j++)
             {
@@ -71,17 +73,22 @@ public class Graph : Matrix
 
         for (var i = 0; i < Rows; i++)
         {
-            var degI = 0;
-
-            for (var j = 0; j < Columns; j++)
-            {
-                degI += (int)A[i, j];
-            }
-
-            result.Add(degI);
+            result.Add(GetVertexDeg(i));
         }
 
         return result.OrderByDescending(x => x).ToList();
+    }
+
+    public int GetVertexDeg(int vertex)
+    {
+        var degI = 0;
+
+        for (var j = 0; j < Columns; j++)
+        {
+            degI += (int)A[vertex, j];
+        }
+
+        return degI;
     }
 
     public int GetGraphM()
@@ -121,8 +128,6 @@ public class Graph : Matrix
     //We can use GetNeighboursOfVertex() to get all edges of a vertex
     public void DisplayAllEdges()
     {
-        List<int> neighbours = new();
-
         Console.WriteLine("Krawędzie");
 
         StringBuilder sb = new();
@@ -130,7 +135,7 @@ public class Graph : Matrix
         //We skip 0
         for (var i = 1; i <= Rows; i++)
         {
-            neighbours = GetNeighboursOfVertex(i);
+            var neighbours = GetNeighboursOfVertex(i);
 
             foreach (var neighbour in neighbours)
             {
@@ -144,40 +149,52 @@ public class Graph : Matrix
         sb.Length -= 3;
 
         Console.WriteLine(sb.ToString());
-
+        Console.WriteLine();
     }
 
     public void BFS(int startingVertex)
     {
+        if (startingVertex <= 0) startingVertex = 0;
 
-        //We go from starting vertex and select all neighbours
-        //We count the neighbours
-        //We repeat this for evry neighbour 
+        var Tree = new Matrix(base.Rows - 1, 2, null);
+        var numberOfLayer = new int[base.Rows];
+        int sum = 0;
+        int branchCounter = 0;
+        int ini_ver = startingVertex;
 
-        List<int> visited = new();
-        int numOfVertices = Rows;
+        var flags = new bool[base.Rows];
+        Array.Fill(flags, false);
 
-        //Klasa, wierzchołki, ile wierzchołków
-        List<Tuple<int, string, int>> logs = new();
+        var Layer = new Matrix(base.Rows - 1, base.Columns - 1, null);
 
-        int klasa = 0;
-
-        logs.Add(new(klasa, startingVertex.ToString(), 1));
-
-        do
+        for (int j = 0; j < base.Columns; j++)
         {
-            klasa++;
+            if (A[ini_ver, j] == 1)
+            {
+                flags[j] = true;
+                branchCounter++;
+                Tree[branchCounter, 1] = ini_ver;
+                Tree[branchCounter, 2] = j;
 
-            visited.Add(startingVertex);
+                //numberOfLayer[]
+            }
+        }
+    }
 
-            var neighbours = GetNeighboursOfVertex(startingVertex).Where(x => !visited.Contains(x)).ToList();
+    public new void Print()
+    {
+        for (var i = 0; i < base.Rows; i++)
+        {
+            for (var j = 0; j < base.Columns; j++)
+            {
+                Console.ForegroundColor = Math.Abs(A[i, j] - 1) < double.Epsilon ? ConsoleColor.Green : ConsoleColor.White;
 
-            logs.Add(new(klasa, string.Join(',',neighbours), neighbours.Count));
+                Console.Write($"{A[i, j]} ");
+            }
 
-        } while (visited.Count == numOfVertices);
+            Console.WriteLine();
+        }
 
         Console.WriteLine();
-
-
     }
 }

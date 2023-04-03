@@ -1,25 +1,22 @@
-﻿using GraphMatrix;
-using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json;
 
-class Program
+namespace GraphMatrix;
+
+internal class Program
 {
-    static (int parsedN, double parsedP) ParseData(string? n, string? p)
+    private static (int parsedN, double parsedP) ParseData(string? n, string? p)
     {
         p = p?.Replace('.', ',');
 
         Console.WriteLine();
 
-        if (!int.TryParse(n, out var parsedN) || !double.TryParse(p, out var parsedP))
-        {
-            Console.WriteLine("Podano niepoprawne dane");
-            return (0, 0.0);
-        }
+        if (int.TryParse(n, out var parsedN) && double.TryParse(p, out var parsedP)) return (parsedN, parsedP);
 
-        return (parsedN, parsedP);
+        Console.WriteLine("Podano niepoprawne dane");
+        return (0, 0.0);
     }
 
-    static (int parsedN, double parsedP) InputData()
+    private static (int parsedN, double parsedP) InputData()
     {
         Console.WriteLine("Podaj liczbę wierzchołków n oraz prawdopodobieństwo p, aby wygenerować losowy graf:");
 
@@ -32,8 +29,10 @@ class Program
         return ParseData(n, p);
     }
 
-    static void StudyGraph(Graph graph)
+    private static void StudyGraph(Graph? graph)
     {
+        if (graph == null) return;
+
         Console.WriteLine("Wprowadzone dane:");
         Console.WriteLine($"\tIlosć wierzchołków: n = {graph.Rows}");
         Console.WriteLine($"\tPrawdopodobieństwo: p = {graph.Probability}");
@@ -42,42 +41,63 @@ class Program
         Console.WriteLine("Macierz grafu:");
         graph.Print();
 
-        var degSequence = graph.CalculateDegSequence();
-        Console.Write($"Ciąg stopni: ({string.Join(", ", degSequence)})\n");
-        Console.WriteLine();
-
         graph.DisplayAllNeighbours();
         graph.DisplayAllEdges();
+
+        var degSequence = graph.CalculateDegSequence();
+        Console.Write($"Ciąg stopni: ({string.Join(", ", degSequence)})\n");
+        Console.WriteLine($"Suma ciągu: {degSequence.Sum()}");
+        Console.WriteLine();
+
+        Console.WriteLine($"Liczba krawędzi grafu m: {graph.GetGraphM()}");
+        Console.WriteLine($"Gęstość: {graph.GetGraphDensity()}");
+
+/*        Console.WriteLine("Naciśnij dowolny klawisz, aby przeszukać graf");
+        Console.ReadLine();
+
+        Console.Write("Podaj wierzchołek, od którego chcesz rozpocząć przeszukiwanie: ");
+        var input = Console.ReadLine();
+        if (int.TryParse(input, out var parsedInput))
+        {
+            graph.BFS(parsedInput);
+        }
+        else
+        {
+            Console.WriteLine("Niepoprawne dane");
+        }*/
+
         graph.BFS(1);
+
+        DrawingModule.DrawGraphOnCircle(graph);
     }
 
-    static Graph GetRandomGraph(int parsedN, double parsedP)
+    private static Graph GetRandomGraph(int parsedN, double parsedP)
     {
-        Graph graph = new Graph(parsedN, parsedP, 0);
+        Graph graph = new(parsedN, parsedP, 0);
         graph.FillRandomly();
 
         return graph;
     }
 
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         Console.WriteLine("Gabriel Siwiec, Mikołaj Zuziak\n");
 
         //Refactor probably needed
 
-        Graph graph = null;
+        Graph? graph = null;
 
         //User input
         if (graph is null && args.Length <= 0)
         {
-            (int n, double p) = InputData();
+            var (n, p) = InputData();
             graph = GetRandomGraph(n, p);
         }
 
         //From params
         if (graph is null && args[0] == "-p")
         {
-            (int n, double p) = ParseData(args[1], args[2]);
+            var (n, p) = ParseData(args[1], args[2]);
             graph = GetRandomGraph(n, p);
         }
 
@@ -89,21 +109,20 @@ class Program
                 var fileName = args[1];
                 var jsonString = File.ReadAllText(fileName);
 
-                var input = JsonSerializer.Deserialize<List<List<int>>>(jsonString);
-                graph = new(input);
+                var input = JsonSerializer.Deserialize<Tuple<List<List<int>>, double>>(jsonString);
+                graph = new Graph(input.Item1, input.Item2);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Nie załadowano pliku .json!");
                 Console.WriteLine(ex.Message);
             }
-
         }
 
         //Save graph matrix
         if (graph is null && args[0] == "-g")
         {
-            (int n, double p) = InputData();
+            var (n, p) = InputData();
             graph = GetRandomGraph(n, p);
 
             string fileName;
@@ -119,8 +138,13 @@ class Program
 
             try
             {
+                var toSerialize = new Tuple<List<List<int>>, double>(graph.GetMatrixAsInt(),
+                    graph.Probability);
+
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                var jsonString = JsonSerializer.Serialize(graph.GetMatrixAsInt(), options);
+                var jsonString = JsonSerializer.Serialize(toSerialize, options);
+
+                Console.WriteLine(jsonString);
 
                 File.WriteAllText(fileName, jsonString);
             }
