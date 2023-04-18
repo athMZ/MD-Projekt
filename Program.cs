@@ -52,23 +52,25 @@ internal class Program
         Console.WriteLine($"Liczba krawędzi grafu m: {graph.GetGraphM()}");
         Console.WriteLine($"Gęstość: {graph.GetGraphDensity()}");
 
-/*        Console.WriteLine("Naciśnij dowolny klawisz, aby przeszukać graf");
-        Console.ReadLine();
-
-        Console.Write("Podaj wierzchołek, od którego chcesz rozpocząć przeszukiwanie: ");
-        var input = Console.ReadLine();
-        if (int.TryParse(input, out var parsedInput))
-        {
-            graph.BFS(parsedInput);
-        }
-        else
-        {
-            Console.WriteLine("Niepoprawne dane");
-        }*/
-
-        graph.BFS(1);
-
         DrawingModule.DrawGraphOnCircle(graph);
+
+        /*
+                Console.WriteLine("Naciśnij dowolny klawisz, aby przeszukać graf");
+                Console.ReadLine();
+
+                Console.Write("Podaj wierzchołek, od którego chcesz rozpocząć przeszukiwanie: ");
+                var input = Console.ReadLine();
+                if (int.TryParse(input, out var parsedInput))
+                {
+                    graph.BFS(parsedInput);
+                }
+                else
+                {
+                    Console.WriteLine("Niepoprawne dane");
+                }*/
+
+        //graph.BFS(1);
+
     }
 
     private static Graph GetRandomGraph(int parsedN, double parsedP)
@@ -110,7 +112,7 @@ internal class Program
                 var jsonString = File.ReadAllText(fileName);
 
                 var input = JsonSerializer.Deserialize<Tuple<List<List<int>>, double>>(jsonString);
-                graph = new Graph(input.Item1, input.Item2);
+                if (input != null) graph = new Graph(input.Item1, input.Item2);
             }
             catch (Exception ex)
             {
@@ -144,9 +146,8 @@ internal class Program
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 var jsonString = JsonSerializer.Serialize(toSerialize, options);
 
-                Console.WriteLine(jsonString);
-
                 File.WriteAllText(fileName, jsonString);
+                Console.WriteLine($"Zapisano plik: {fileName}");
             }
             catch (Exception ex)
             {

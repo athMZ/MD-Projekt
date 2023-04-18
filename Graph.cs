@@ -2,22 +2,32 @@
 
 namespace GraphMatrix;
 
+//We need to refactor code to use new Lists of nodes and edges
+
 public class Graph : Matrix
 {
     public readonly double Probability;
 
+    private List<Node> Nodes { get; set; } = new();
+    public List<Edge> Edges { get; set; } = new();
+
     public Graph() : base(0, 0, 0)
     {
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(int n, double p, double? fill) : base(n, n, fill)
     {
         Probability = p;
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(Graph graph) : base(graph)
     {
         Probability = graph.Probability;
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(List<List<int>> input, double probability) : base(input.Count, input[0].Count, 0)
@@ -31,6 +41,8 @@ public class Graph : Matrix
                 A[i, j] = input[i][j];
             }
         }
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public List<List<int>> GetMatrixAsInt()
@@ -152,31 +164,29 @@ public class Graph : Matrix
         Console.WriteLine();
     }
 
-    public void BFS(int startingVertex)
+    //Function to perform Broad First Search on the graph - GCP generated
+    public void BFS(int vertex)
     {
-        if (startingVertex <= 0) startingVertex = 0;
-
-        var Tree = new Matrix(base.Rows - 1, 2, null);
-        var numberOfLayer = new int[base.Rows];
-        int sum = 0;
-        int branchCounter = 0;
-        int ini_ver = startingVertex;
-
-        var flags = new bool[base.Rows];
-        Array.Fill(flags, false);
-
-        var Layer = new Matrix(base.Rows - 1, base.Columns - 1, null);
-
-        for (int j = 0; j < base.Columns; j++)
+        //Initialise visited array to false
+        bool[] visited = new bool[Rows];
+        //Create a queue
+        Queue<int> queue = new();
+        //Mark the current node as visited and enqueue it
+        visited[vertex] = true;
+        queue.Enqueue(vertex);
+        //Loop until queue is empty
+        while (queue.Count != 0)
         {
-            if (A[ini_ver, j] == 1)
+            //Dequeue a vertex from queue and print it
+            vertex = queue.Dequeue();
+            Console.Write(vertex + " ");
+            //Get all adjacent vertices of the dequeued vertex s. If a adjacent has not been visited, then mark it visited and enqueue it
+            var neighbours = GetNeighboursOfVertex(vertex);
+            foreach (var neighbour in neighbours)
             {
-                flags[j] = true;
-                branchCounter++;
-                Tree[branchCounter, 1] = ini_ver;
-                Tree[branchCounter, 2] = j;
-
-                //numberOfLayer[]
+                if (visited[neighbour - 1]) continue;
+                visited[neighbour - 1] = true;
+                queue.Enqueue(neighbour);
             }
         }
     }
@@ -196,5 +206,29 @@ public class Graph : Matrix
         }
 
         Console.WriteLine();
+    }
+
+    private void RepresentGraphAsNodesAndEdges()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+            {
+                if (!(Math.Abs(A[i, j] - 1) < Double.Epsilon)) continue;
+
+                var n1 = new Node(i, i);
+                var n2 = new Node(j, j);
+
+                Nodes.AddIfNotExists(n1);
+                Nodes.AddIfNotExists(n2);
+                Edges.AddIfNotExists(new Edge(n1, n2));
+
+            }
+        }
+    }
+
+    public int GetNumberOfNodes()
+    {
+        return Nodes.Count;
     }
 }
