@@ -71,9 +71,6 @@ internal class Program
             Console.WriteLine("Niepoprawne dane");
         }
 
-        graph.BFS(1);
-
-        DrawingModule.DrawGraphOnCircle(graph);
     }
 
     private static Graph GetRandomGraph(int parsedN, double parsedP)
@@ -115,7 +112,7 @@ internal class Program
                 var jsonString = File.ReadAllText(fileName);
 
                 var input = JsonSerializer.Deserialize<Tuple<List<List<int>>, double>>(jsonString);
-                graph = new Graph(input.Item1, input.Item2);
+                if (input != null) graph = new Graph(input.Item1, input.Item2);
             }
             catch (Exception ex)
             {
@@ -149,9 +146,8 @@ internal class Program
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 var jsonString = JsonSerializer.Serialize(toSerialize, options);
 
-                Console.WriteLine(jsonString);
-
                 File.WriteAllText(fileName, jsonString);
+                Console.WriteLine($"Zapisano plik: {fileName}");
             }
             catch (Exception ex)
             {

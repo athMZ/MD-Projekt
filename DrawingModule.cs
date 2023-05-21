@@ -63,7 +63,7 @@ namespace GraphMatrix
 
                     var linePoints = new Tuple<int, int, int, int>(circleX, circleY, x1, y1);
 
-                    if(created.Contains(linePoints)) continue;
+                    if (created.Contains(linePoints)) continue;
 
                     gfx.DrawLine(new Pen(Brushes.Black, 2), circleX + circleRadius / 2, circleY + circleRadius / 2, x1 + circleRadius / 2, y1 + circleRadius / 2);
 

@@ -2,22 +2,32 @@
 
 namespace GraphMatrix;
 
+//We need to refactor code to use new Lists of nodes and edges
+
 public class Graph : Matrix
 {
     public readonly double Probability;
 
+    private List<Node> Nodes { get; set; } = new();
+    public List<Edge> Edges { get; set; } = new();
+
     public Graph() : base(0, 0, 0)
     {
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(int n, double p, double? fill) : base(n, n, fill)
     {
         Probability = p;
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(Graph graph) : base(graph)
     {
         Probability = graph.Probability;
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(List<List<int>> input, double probability) : base(input.Count, input[0].Count, 0)
@@ -31,6 +41,8 @@ public class Graph : Matrix
                 A[i, j] = input[i][j];
             }
         }
+
+        RepresentGraphAsNodesAndEdges();
     }
 
     public List<List<int>> GetMatrixAsInt()
@@ -234,5 +246,29 @@ public class Graph : Matrix
         }
 
         Console.WriteLine();
+    }
+
+    private void RepresentGraphAsNodesAndEdges()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+            {
+                if (!(Math.Abs(A[i, j] - 1) < Double.Epsilon)) continue;
+
+                var n1 = new Node(i, i);
+                var n2 = new Node(j, j);
+
+                Nodes.AddIfNotExists(n1);
+                Nodes.AddIfNotExists(n2);
+                Edges.AddIfNotExists(new Edge(n1, n2));
+
+            }
+        }
+    }
+
+    public int GetNumberOfNodes()
+    {
+        return Nodes.Count;
     }
 }
