@@ -114,6 +114,18 @@ public class Graph : Matrix
         return result.Distinct().OrderBy(x => x).ToList();
     }
 
+    public Dictionary<int, List<int>> GetAllNeighbours()
+    {
+        var result = new Dictionary<int, List<int>>();
+
+        for (var i = 1; i <= Rows; i++)
+        {
+            result.Add(i, GetNeighboursOfVertex(i));
+        }
+
+        return result;
+    }
+
     public void DisplayAllNeighbours()
     {
         //We skip 0
@@ -152,33 +164,59 @@ public class Graph : Matrix
         Console.WriteLine();
     }
 
-    public void BFS(int startingVertex)
+    public Dictionary<int, List<int>> BFS(int startingVertex)
     {
         if (startingVertex <= 0) startingVertex = 0;
 
-        var Tree = new Matrix(base.Rows - 1, 2, null);
-        var numberOfLayer = new int[base.Rows];
-        int sum = 0;
-        int branchCounter = 0;
-        int ini_ver = startingVertex;
+        var n = Rows;
+        var visted = new bool[n];
+        var distances = new int[n];
+        var queue = new Queue<int>();
 
-        var flags = new bool[base.Rows];
-        Array.Fill(flags, false);
+        visted[startingVertex] = true;
+        distances[startingVertex] = 0;
+        queue.Enqueue(startingVertex);
 
-        var Layer = new Matrix(base.Rows - 1, base.Columns - 1, null);
-
-        for (int j = 0; j < base.Columns; j++)
+        while (queue.Count != 0)
         {
-            if (A[ini_ver, j] == 1)
+            var currentVertex = queue.Dequeue();
+            for (var i = 0; i < n; i++)
             {
-                flags[j] = true;
-                branchCounter++;
-                Tree[branchCounter, 1] = ini_ver;
-                Tree[branchCounter, 2] = j;
+                if (!(Math.Abs(A[currentVertex, i] - 1) < double.Epsilon) || visted[i]) continue;
 
-                //numberOfLayer[]
+                visted[i] = true;
+                distances[i] = distances[currentVertex] + 1;
+                queue.Enqueue(i);
             }
         }
+
+        distances = distances.Order().ToArray();
+
+        var classesVertices = new Dictionary<int, List<int>>();
+        for (var i = 0; i < distances.Length; i++)
+        {
+            if (classesVertices.ContainsKey(distances[i]))
+                classesVertices[distances[i]].Add(i);
+            else
+                classesVertices.Add(distances[i], new List<int> { i });
+        }
+
+        classesVertices.Remove(0);
+
+        return classesVertices;
+    }
+
+    public void PrintBFS(int startingVertex)
+    {
+        var classesVertices = BFS(startingVertex);
+
+        Console.WriteLine($"Wierzchołek początkowy: {startingVertex + 1}");
+
+        foreach (var (key, value) in classesVertices)
+        {
+            Console.WriteLine($"Klasa {key}: {string.Join(", ", value)}");
+        }
+
     }
 
     public new void Print()

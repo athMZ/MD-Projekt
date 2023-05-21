@@ -52,19 +52,24 @@ internal class Program
         Console.WriteLine($"Liczba krawędzi grafu m: {graph.GetGraphM()}");
         Console.WriteLine($"Gęstość: {graph.GetGraphDensity()}");
 
-/*        Console.WriteLine("Naciśnij dowolny klawisz, aby przeszukać graf");
+        Console.WriteLine("\n----------\n");
+
+        Console.WriteLine("Naciśnij dowolny klawisz, aby przeszukać graf");
         Console.ReadLine();
 
         Console.Write("Podaj wierzchołek, od którego chcesz rozpocząć przeszukiwanie: ");
         var input = Console.ReadLine();
+
+        Console.WriteLine();
+
         if (int.TryParse(input, out var parsedInput))
         {
-            graph.BFS(parsedInput);
+            graph.PrintBFS(parsedInput - 1);
         }
         else
         {
             Console.WriteLine("Niepoprawne dane");
-        }*/
+        }
 
         graph.BFS(1);
 
