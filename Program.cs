@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using GraphMatrix.Entites;
 
 namespace GraphMatrix;
 
@@ -64,7 +65,7 @@ internal class Program
 
         if (int.TryParse(input, out var parsedInput))
         {
-            graph.PrintBFS(parsedInput - 1);
+            graph.PrintBfs(parsedInput - 1);
         }
         else
         {

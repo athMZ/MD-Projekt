@@ -1,15 +1,15 @@
 ﻿using System.Text;
 
-namespace GraphMatrix;
-
-//We need to refactor code to use new Lists of nodes and edges
+namespace GraphMatrix.Entites;
 
 public class Graph : Matrix
 {
     public readonly double Probability;
 
-    private List<Node> Nodes { get; set; } = new();
-    public List<Edge> Edges { get; set; } = new();
+    private UniqueList<Node> Nodes = new();
+    public UniqueList<Edge> Edges = new();
+
+    public int NumberOfNodes => Nodes.Count;
 
     public Graph() : base(0, 0, 0)
     {
@@ -19,14 +19,12 @@ public class Graph : Matrix
     public Graph(int n, double p, double? fill) : base(n, n, fill)
     {
         Probability = p;
-
         RepresentGraphAsNodesAndEdges();
     }
 
     public Graph(Graph graph) : base(graph)
     {
         Probability = graph.Probability;
-
         RepresentGraphAsNodesAndEdges();
     }
 
@@ -36,7 +34,7 @@ public class Graph : Matrix
 
         for (var i = 0; i < input.Count; i++)
         {
-            for (int j = 0; j < input[i].Count; j++)
+            for (var j = 0; j < input[i].Count; j++)
             {
                 A[i, j] = input[i][j];
             }
@@ -47,13 +45,13 @@ public class Graph : Matrix
 
     public List<List<int>> GetMatrixAsInt()
     {
-        List<List<int>> result = new(0);
+        var result = new List<List<int>>();
 
-        for (int i = 0; i < Rows; i++)
+        for (var i = 0; i < Rows; i++)
         {
             result.Add(new List<int>());
 
-            for (int j = 0; j < Columns; j++)
+            for (var j = 0; j < Columns; j++)
             {
                 result[i].Add(Convert.ToInt32(A[i, j]));
             }
@@ -81,7 +79,7 @@ public class Graph : Matrix
 
     public List<int> CalculateDegSequence()
     {
-        List<int> result = new();
+        var result = new List<int>();
 
         for (var i = 0; i < Rows; i++)
         {
@@ -97,7 +95,7 @@ public class Graph : Matrix
 
         for (var j = 0; j < Columns; j++)
         {
-            degI += (int)A[vertex, j];
+            degI += (int) A[vertex, j];
         }
 
         return degI;
@@ -113,10 +111,10 @@ public class Graph : Matrix
         return GetGraphM() / (0.5 * base.Rows * (base.Rows - 1));
     }
 
-    //Vertices are counted form 1 up
+    // Vertices are counted from 1 up
     public List<int> GetNeighboursOfVertex(int vertex)
     {
-        List<int> result = new();
+        var result = new List<int>();
 
         for (var j = 0; j < Columns; j++)
         {
@@ -140,7 +138,7 @@ public class Graph : Matrix
 
     public void DisplayAllNeighbours()
     {
-        //We skip 0
+        // We skip 0
         for (var i = 1; i <= Rows; i++)
         {
             Console.WriteLine($"Sąsiedzi wierzchołka {i}: {string.Join(", ", GetNeighboursOfVertex(i))}");
@@ -149,14 +147,14 @@ public class Graph : Matrix
         Console.WriteLine();
     }
 
-    //We can use GetNeighboursOfVertex() to get all edges of a vertex
+    // We can use GetNeighboursOfVertex() to get all edges of a vertex
     public void DisplayAllEdges()
     {
         Console.WriteLine("Krawędzie");
 
-        StringBuilder sb = new();
+        var sb = new StringBuilder();
 
-        //We skip 0
+        // We skip 0
         for (var i = 1; i <= Rows; i++)
         {
             var neighbours = GetNeighboursOfVertex(i);
@@ -169,23 +167,23 @@ public class Graph : Matrix
             sb.Append('\n');
         }
 
-        //Remove last '\n', ' ', ','
+        // Remove last '\n', ' ', ','
         sb.Length -= 3;
 
         Console.WriteLine(sb.ToString());
         Console.WriteLine();
     }
 
-    public Dictionary<int, List<int>> BFS(int startingVertex)
+    public Dictionary<int, List<int>> Bfs(int startingVertex)
     {
         if (startingVertex <= 0) startingVertex = 0;
 
         var n = Rows;
-        var visted = new bool[n];
+        var visited = new bool[n];
         var distances = new int[n];
         var queue = new Queue<int>();
 
-        visted[startingVertex] = true;
+        visited[startingVertex] = true;
         distances[startingVertex] = 0;
         queue.Enqueue(startingVertex);
 
@@ -194,15 +192,15 @@ public class Graph : Matrix
             var currentVertex = queue.Dequeue();
             for (var i = 0; i < n; i++)
             {
-                if (!(Math.Abs(A[currentVertex, i] - 1) < double.Epsilon) || visted[i]) continue;
+                if (!(Math.Abs(A[currentVertex, i] - 1) < double.Epsilon) || visited[i]) continue;
 
-                visted[i] = true;
+                visited[i] = true;
                 distances[i] = distances[currentVertex] + 1;
                 queue.Enqueue(i);
             }
         }
 
-        distances = distances.Order().ToArray();
+        distances = distances.OrderBy(x => x).ToArray();
 
         var classesVertices = new Dictionary<int, List<int>>();
         for (var i = 0; i < distances.Length; i++)
@@ -210,7 +208,7 @@ public class Graph : Matrix
             if (classesVertices.ContainsKey(distances[i]))
                 classesVertices[distances[i]].Add(i);
             else
-                classesVertices.Add(distances[i], new List<int> { i });
+                classesVertices.Add(distances[i], new List<int> {i});
         }
 
         classesVertices.Remove(0);
@@ -218,9 +216,9 @@ public class Graph : Matrix
         return classesVertices;
     }
 
-    public void PrintBFS(int startingVertex)
+    public void PrintBfs(int startingVertex)
     {
-        var classesVertices = BFS(startingVertex);
+        var classesVertices = Bfs(startingVertex);
 
         Console.WriteLine($"Wierzchołek początkowy: {startingVertex + 1}");
 
@@ -228,47 +226,43 @@ public class Graph : Matrix
         {
             Console.WriteLine($"Klasa {key}: {string.Join(", ", value)}");
         }
-
     }
 
-    public new void Print()
+    public new string Print()
     {
-        for (var i = 0; i < base.Rows; i++)
-        {
-            for (var j = 0; j < base.Columns; j++)
-            {
-                Console.ForegroundColor = Math.Abs(A[i, j] - 1) < double.Epsilon ? ConsoleColor.Green : ConsoleColor.White;
+        var sb = new StringBuilder();
 
-                Console.Write($"{A[i, j]} ");
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+            {
+                var value = Math.Abs(A[i, j] - 1) < double.Epsilon ? "1" : "0";
+                var color = Math.Abs(A[i, j] - 1) < double.Epsilon ? ConsoleColor.Green : ConsoleColor.White;
+
+                Console.ForegroundColor = color;
+                sb.Append($"{value} ");
             }
 
-            Console.WriteLine();
+            sb.AppendLine();
         }
-
-        Console.WriteLine();
+        
+        return sb.AppendLine().ToString();
     }
 
     private void RepresentGraphAsNodesAndEdges()
     {
-        for (int i = 0; i < Rows; i++)
+        for (var i = 0; i < Rows; i++)
         {
-            for (int j = 0; j < Columns; j++)
+            for (var j = 0; j < Columns; j++)
             {
-                if (!(Math.Abs(A[i, j] - 1) < Double.Epsilon)) continue;
+                if (!(Math.Abs(A[i, j] - 1) < double.Epsilon)) continue;
 
                 var n1 = new Node(i, i);
                 var n2 = new Node(j, j);
 
-                Nodes.AddIfNotExists(n1);
-                Nodes.AddIfNotExists(n2);
-                Edges.AddIfNotExists(new Edge(n1, n2));
-
+                Nodes.AddRange(new[] { n1, n2 });
+                Edges.Add(new Edge(n1, n2));
             }
         }
-    }
-
-    public int GetNumberOfNodes()
-    {
-        return Nodes.Count;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Text;
-using Microsoft.VisualBasic.CompilerServices;
 
-namespace GraphMatrix;
+namespace GraphMatrix.Entites;
 
 public class Matrix
 {
