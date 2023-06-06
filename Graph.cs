@@ -178,27 +178,46 @@ public class Graph : Matrix
 
     public void BFS(int startVertex)
     {
-        int numVertices = A.GetLength(0);
-        bool[] visited = new bool[numVertices];
+        var numVertices = A.GetLength(0);
+        var visited = new bool[numVertices];
 
-        Queue<int> queue = new Queue<int>();
+        var currentLevel = new Queue<int>();
+        var nextLevel = new Queue<int>();
+
         visited[startVertex] = true;
-        queue.Enqueue(startVertex);
+        currentLevel.Enqueue(startVertex);
 
-        while (queue.Count > 0)
+        var currentLayer = 0;
+        var verticesInCurrentLayer = 0;
+
+        while (currentLevel.Count > 0)
         {
-            int currentVertex = queue.Dequeue();
-                
+            var currentVertex = currentLevel.Dequeue();
+            verticesInCurrentLayer++;
+
             Console.Write((currentVertex + 1) + " ");
 
             for (var i = 0; i < numVertices; i++)
             {
                 if (A[currentVertex, i] != 1 || visited[i]) continue;
+
                 visited[i] = true;
-                queue.Enqueue(i);
+                nextLevel.Enqueue(i);
+            }
+
+            if (currentLevel.Count != 0) continue;
+            Console.WriteLine(" [Layer " + currentLayer + "] Count: " + verticesInCurrentLayer);
+
+            currentLayer++;
+            verticesInCurrentLayer = 0;
+
+            while (nextLevel.Count > 0)
+            {
+                currentLevel.Enqueue(nextLevel.Dequeue());
             }
         }
     }
+
 
     public new void Print()
     {
