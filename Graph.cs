@@ -176,59 +176,48 @@ public class Graph : Matrix
         Console.WriteLine();
     }
 
-    public Dictionary<int, List<int>> BFS(int startingVertex)
+    public void BFS(int startVertex)
     {
-        if (startingVertex <= 0) startingVertex = 0;
+        int numVertices = A.GetLength(0);
+        bool[] visited = new bool[numVertices];
 
-        var n = Rows;
-        var visted = new bool[n];
-        var distances = new int[n];
-        var queue = new Queue<int>();
+        Queue<int> queue = new Queue<int>();
+        visited[startVertex] = true;
+        queue.Enqueue(startVertex);
 
-        visted[startingVertex] = true;
-        distances[startingVertex] = 0;
-        queue.Enqueue(startingVertex);
-
-        while (queue.Count != 0)
+        while (queue.Count > 0)
         {
-            var currentVertex = queue.Dequeue();
-            for (var i = 0; i < n; i++)
-            {
-                if (!(Math.Abs(A[currentVertex, i] - 1) < double.Epsilon) || visted[i]) continue;
+            int currentVertex = queue.Dequeue();
+                
+            Console.Write((currentVertex + 1) + " ");
 
-                visted[i] = true;
-                distances[i] = distances[currentVertex] + 1;
+            for (var i = 0; i < numVertices; i++)
+            {
+                if (A[currentVertex, i] != 1 || visited[i]) continue;
+                visited[i] = true;
                 queue.Enqueue(i);
             }
         }
-
-        distances = distances.Order().ToArray();
-
-        var classesVertices = new Dictionary<int, List<int>>();
-        for (var i = 0; i < distances.Length; i++)
-        {
-            if (classesVertices.ContainsKey(distances[i]))
-                classesVertices[distances[i]].Add(i);
-            else
-                classesVertices.Add(distances[i], new List<int> { i });
-        }
-
-        classesVertices.Remove(0);
-
-        return classesVertices;
     }
 
     public void PrintBFS(int startingVertex)
     {
-        var classesVertices = BFS(startingVertex);
-
-        Console.WriteLine($"Wierzchołek początkowy: {startingVertex + 1}");
-
-        foreach (var (key, value) in classesVertices)
-        {
-            Console.WriteLine($"Klasa {key}: {string.Join(", ", value)}");
-        }
-
+        BFS(startingVertex);
+        //
+        // Console.WriteLine($"Węzeł | Odległość | Poprzednik");
+        // for (var i = 0; i < classesVertices.Length; i++)
+        // {
+        //     Console.Write("{0}\t", i);
+        //     if (classesVertices[i,0] == int.MaxValue) {
+        //         Console.Write("nieosiągalny");
+        //     } else {
+        //         Console.Write("{0}\t", classesVertices[i,0]);
+        //         if (classesVertices[i,1] == -1)
+        //             Console.Write("brak");
+        //         else Console.Write("{0}", classesVertices[i,1]); ;
+        //     }
+        //     Console.WriteLine();
+        // }
     }
 
     public new void Print()
