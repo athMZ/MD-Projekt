@@ -200,26 +200,6 @@ public class Graph : Matrix
         }
     }
 
-    public void PrintBFS(int startingVertex)
-    {
-        BFS(startingVertex);
-        //
-        // Console.WriteLine($"Węzeł | Odległość | Poprzednik");
-        // for (var i = 0; i < classesVertices.Length; i++)
-        // {
-        //     Console.Write("{0}\t", i);
-        //     if (classesVertices[i,0] == int.MaxValue) {
-        //         Console.Write("nieosiągalny");
-        //     } else {
-        //         Console.Write("{0}\t", classesVertices[i,0]);
-        //         if (classesVertices[i,1] == -1)
-        //             Console.Write("brak");
-        //         else Console.Write("{0}", classesVertices[i,1]); ;
-        //     }
-        //     Console.WriteLine();
-        // }
-    }
-
     public new void Print()
     {
         for (var i = 0; i < base.Rows; i++)

@@ -64,7 +64,7 @@ internal class Program
 
         if (int.TryParse(input, out var parsedInput))
         {
-            graph.PrintBFS(parsedInput - 1);
+            graph.BFS(parsedInput - 1);
         }
         else
         {
